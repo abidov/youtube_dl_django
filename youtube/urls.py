@@ -4,5 +4,5 @@ from .views import *
 
 urlpatterns = [
     path('', index.as_view(), name='index'),
-    path('download/<str:mp3_id>', download, name='download')
+    path('download/<str:mp3_id>/', download, name='download')
 ]

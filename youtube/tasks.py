@@ -15,18 +15,13 @@ DOWNLOAD_OPTIONS_MP3 = {
         }
 
 @shared_task
-def send_email_task(email, url):
-    send_mail('Download your mp3', url, 'adidovvv.arslan@gmail.com', [email])
-    return None
-
-@shared_task
-def download_music(url):
+def do_all(email, url, download_url):
     with youtube_dl.YoutubeDL(DOWNLOAD_OPTIONS_MP3) as dl:
-        dl.download([url])
+        result = dl.extract_info(url)
+        download_url += result.get('id')
+        try:
+            YoutubeModel.objects.create(url=url, mp3_title=result.get('title'), mp3_id=result.get('id'))
+        except:
+            pass
+        send_mail('Download your mp3', download_url, 'adidovvv.arslan@gmail.com', [email])
     return None
-
-
-def get_info(url):
-    with youtube_dl.YoutubeDL(DOWNLOAD_OPTIONS_MP3) as dl:
-        result = dl.extract_info(url, download=False)
-        return result
